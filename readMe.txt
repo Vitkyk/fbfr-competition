@@ -18,18 +18,14 @@ CREATE DATABASE '';
 CREATE USER admin WITH password 'admin';
 GRANT ALL privileges ON DATABASE '' TO admin;
 
-Step 5: Setting IP
-
-sudo ifconfig ETH 192.168.1.42 netmask 255.255.255.0 up /*where ETH - your interface*/
-
-Step 6: Start server.js
+Step 5: Start server.js
 
 cd PATH/'' /*where PATH - way to copying folder*/
 node server.js
 
-Step 7: Connect to server
+Step 6: Connect to server
 /*In browser*/
-192.168.1.42:3000/server /*for admin*/
-192.168.1.42:3000/judge /*for judjes*/
+IP:3000/server /*for admin*/
+IP:3000/judge /*for judjes*/
 
 
