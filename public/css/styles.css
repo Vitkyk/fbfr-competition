@@ -1,0 +1,87 @@
+body {
+	width: 1240px;
+	height: 640px;
+}
+div {
+	border: 1px solid black;
+}
+table {
+	border: 1px solid black;
+}
+th {
+	border: 1px solid black;
+}
+tr {
+	border: 1px solid black;
+}
+td {
+	border: 1px solid black;
+}
+#ctrl {
+	position: absolute;
+	width: 1240px;
+	height: 640px;
+}
+#title {
+	position: absolute;
+	width: 50%;height:20%;
+	left:25%;top: 0%;
+}
+#left-menu {
+	position: absolute;
+	width: 15%; height:60%;
+	left: 5%; top: 30%;
+}
+#main {
+
+	position: absolute;
+	width: 60%; 
+	left: 20%;top: 30%;
+}
+#main-rank {
+	background-color: #aaaaaa;
+	position: absolute;
+	width: 15%; 
+	left: 60%;top: 10%;
+}
+#default-main {
+	position: absolute;
+	width: 60%; 
+	left: 20%;top: 30%;
+}
+#right-menu {
+	position: absolute;
+	width: 15%; height:60%;
+	left: 80%; top: 30%;
+}		
+#right-menu-comparing {
+	background-color: #aaaaaa;
+	position: absolute;
+	width: 25%; height: 100%;
+	left: 0%; top: 0%;
+}
+#login {
+	position: absolute;
+	width: 60%; 
+	left: 20%;top: 30%;
+}
+#new-category-form {
+	position: absolute;
+	width: 60%; 
+	left: 20%;top: 30%;
+}
+#edit-category-form {
+	position: absolute;
+	width: 60%; 
+	left: 20%;top: 30%;
+}
+#new-player-form {
+	position: absolute;
+	width: 60%; 
+	left: 20%;top: 30%;
+}
+#edit-player-form {
+	position: absolute;
+	width: 60%; 
+	left: 20%;top: 30%;
+}

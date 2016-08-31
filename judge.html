@@ -1,0 +1,101 @@
+<!doctype html>
+<html ng-app='judge'>
+  <head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+	<script src="js/angular.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="css/styles.css"/>
+  </head>
+  <body>
+	<div align='center' id="ctrl" ng-controller="categoryCtrl">
+		<div id="title" ng-show="isShow.title">
+			<h2>{{createName()}}</h2>
+			<h3>{{createTitle()}}</h3>
+		</div>
+		<div  id="left-menu" ng-show="isShow.lmenu">
+			<div id="menu-comparing" ng-show="isShow.comp">
+				<table>
+					<tr>
+						<th>
+							{{header[0].name}}
+						</th>
+						<th>
+							Include
+						</th>
+					</tr>
+					<tr align="center" ng-repeat="player in playersToComp">
+						<td>
+							{{player.number}}
+						</td>
+						<td>
+							<input type="checkbox" ng-model="player.chosen">
+						</td>
+					</tr>
+				</table>
+				<button ng-disabled="checkCountChosen()" ng-click="sendCompare()"> Compare {{countChosen()}} / {{playersInComp}} </button>
+				
+			</div>
+		</div>
+		<div id="default-main" ng-show="isShow.defaultMain">
+			<h2>Please, wait protocol!</h2>
+		</div>
+		<div id="main" ng-show="isShow.main">
+			<div>
+				<table>
+					<tr>
+						<th ng-repeat="node in header">
+							{{node.name}}
+						</th>
+					</tr>
+					<tr align="center" ng-repeat="member in protocol">
+						<td>
+							{{ member.number }}
+						</td>
+						<td>
+							<button ng-style="{'background-color': setColorInProtocol($index)};" ng-click='selectRank($index)'> {{member.rank}}</button>
+						</td>
+					</tr>
+				</table>
+				<button ng-click="passProtocol()" ng-disabled="isProtocolCorrect()">Send Protocol</button>
+			</div>
+			<div id="main-rank" ng-show="isShow.mainRank">
+					<div ng-repeat="rank in ranks">
+							<button ng-style="{'background-color': setColor($index)};" ng-click="selectRankConfirmation($index)">{{$index}} ({{rank.count}})</button>
+					</div>
+			</div>
+		</div>
+		<div id="login" ng-show="isShow.login">
+			<h1>Login!!!</h1>
+			<form name="login">
+				<div>
+					<span>
+						Login:<input type="text" name="login">
+			  		</span>
+			  	</div>
+				<div>
+					<span>
+						Pass:<input type="password" name="pass">
+				  	</span>
+			  	</div>
+				<div>
+			  		<input type="submit" value="Login">
+			  	</div>
+			  	<div>
+			  		{{loginError}}
+			  	</div>
+			</form>
+		</div>
+		<div id="right-menu"  ng-show="isShow.rmenu">
+			<div>
+				<form name="chat">
+				  <input type="text" name="message">
+				  <input type="submit" value="Send">
+				</form>
+			</div>
+			<div ng-repeat="msg in messages">
+				{{msg.data}}
+			</div>
+		</div>
+	</div>
+	<script src="js/judge.cntrl.js"></script>
+  </body>
+</html>
