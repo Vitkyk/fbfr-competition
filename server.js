@@ -33,6 +33,7 @@ var Categories = sequelize.define('categories', {
   index: {
     type: Sequelize.INTEGER,
     primaryKey: true,
+    autoIncrement: true
   },
   full_name: Sequelize.STRING,
   short_name: Sequelize.STRING,
@@ -47,6 +48,11 @@ var PlayersCategories = sequelize.define('playersCategories', {
   total_sum: Sequelize.INTEGER,
   total_rank: Sequelize.INTEGER,
 });
+
+sequelize.sync();
+
+Players.belongsToMany(Categories, { through: PlayersCategories})
+Categories.belongsToMany(Players, { through: PlayersCategories})
 
 sequelize.sync();
 //--------DB function----------------
@@ -169,13 +175,27 @@ addCategory = function(data) {
 		return temp;
 	}
 	
+	var factors = [parseInt(data.round1, 10),];
+	var completed = [false,];
+
 	categories[categories.length - 1].rounds[0] = addRound(parseInt(data.round1, 10));
 	categories[categories.length - 1].complete[0] = false;
 	
 	if (data.round2 != "0") {
+		factors[1] = parseInt(data.round2, 10);
+		completed[1] = false; 
+
 		categories[categories.length - 1].rounds[1] = addRound(parseInt(data.round2, 10));
 		categories[categories.length - 1].complete[1] = false;
 	}
+
+	Categories.create({
+		full_name: data.fullName,
+		short_name: data.shortName,
+		factors: factors,
+		completed: completed,
+	});
+	sequelize.sync();
 	//stub
 	SaveToJSONFile(dbJSON, categories);
 };
@@ -197,17 +217,8 @@ addPlayer = function(data) {
 	      from: data.from,
 	    }
 	});
-	Players
-		.find({where: {number: 13}})
-		.then(function (temp) {
-			temp.updateAttributes({
-				full_name: 'data.fullName',
-			    from: 'data.from',
-			})
-		})
 
 	sequelize.sync();
-  	SaveToJSONFile('text.txt', DBPlayers);
 
 	var newPlId = categories[selectedCategory].players.length;
 	
@@ -229,6 +240,13 @@ addPlayer = function(data) {
 			rank: 0,
 		}
 	}
+
+	// PlayersCategories.findOrCreate({
+	// 	where: {
+
+	// 	},
+	// });
+
 	//stub
 	SaveToJSONFile(dbJSON, categories);
 };
