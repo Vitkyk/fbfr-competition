@@ -21,8 +21,9 @@ angular.module('judge', [])
 		};
 		
 		$scope.categories = [];
+		$scope.categoryName = "";
 		$scope.selectedCategory = 0;
-		$scope.selectedRound = 0;
+		$scope.selectedRound = -1;
 		$scope.selectedPlayerId = 0;
 		$scope.players = [];
 		$scope.playersToComp = [];
@@ -30,8 +31,8 @@ angular.module('judge', [])
 		$scope.playersToComp = [];
 		
 		$scope.header = [
-			{name: 'NPlayer', subname:[]},
-			{name: 'NRank', subname:[]},
+			{name: 'Номер', subname:[]},
+			{name: 'Место', subname:[]},
 		];
 
 		//------------------------------------------
@@ -139,15 +140,19 @@ angular.module('judge', [])
 
 		$scope.createName = function() {
 			if ($scope.auth) {
-				return "Judge #" + $scope.id;
+				return "Судья #" + $scope.id;
 			} else {
-				return "Please login first!";
+				return "Пожалуйста, Авторизируйтесь!";
 			}
 		};
 		
 		$scope.createTitle = function() {
 			if ($scope.auth) {
-				return "Category Name. Round Number";
+				if ($scope.isShow.defaultMain) {
+					return "Ожидайте протокол.";
+				} else {
+					return $scope.categoryName +". Раунд #"+($scope.selectedRound+1)+".";
+				}
 			} else {
 				return "";
 			}
@@ -245,15 +250,22 @@ angular.module('judge', [])
 			}
 			if (data.type == "protocol") {
 				$scope.protocol = data.protocol;
+				$scope.categoryName = data.category;
+				$scope.selectedRound = data.round;
 				$scope.ranks = [];
+				
 				$scope.ranks = [
 					{count: $scope.protocol.length,},
 				];
+				
 				for (i = 1; i < $scope.protocol.length+1; i++) {
 					$scope.ranks[i] = {
 						count: 0,
 					}
 				};
+				
+				$scope.recountRanks();
+
 				$scope.isShow.main = true;
 				$scope.isShow.defaultMain = false;
 			}
