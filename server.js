@@ -41,6 +41,8 @@ var Categories = sequelize.define('categories', {
   completed: Sequelize.ARRAY(Sequelize.BOOLEAN),
 });
 
+sequelize.sync();
+
 var PlayersCategories = sequelize.define('playersCategories', {
   judges: Sequelize.ARRAY(Sequelize.ARRAY(Sequelize.INTEGER)),
   sum: Sequelize.ARRAY(Sequelize.INTEGER),
@@ -96,18 +98,14 @@ SaveToJSONFile = function(fileName, data){
 		    console.log("File "+fileName+" Open Success");
 		    fs.write(file_handle, JSON.stringify(data), null, 'utf8', function(err, written) {
 		        if (!err) {
-		            // Всё прошло хорошо
 		            console.log("Writing to File "+fileName+" Success");
-		            //close file
 		            fs.close(file_handle);
 		            console.log("File "+fileName+" Close Success");
 		        } else {
-		            // Произошла ошибка при записи
 		            console.log("EWF!");
 		        }
 		    });
 		} else {
-		    // Обработка ошибок
 		    console.log("EOF!");
 		}
 	});
@@ -147,6 +145,13 @@ openedFlag = false;
 compareFlag = false;
 openedCategory = -1;
 openedRound = -1;
+
+var DBNodes = [];
+
+status = {
+	isProtocolOpened: false,
+}
+
 console.log(typeof(categories));
 console.log(categories);
 
@@ -158,6 +163,7 @@ updateModels();
 
 //__init__ competition
 addCategory = function(data) {
+
 	categories[categories.length] = {
 		fullName: data.fullName,
 		shortName: data.shortName,
@@ -196,11 +202,12 @@ addCategory = function(data) {
 		completed: completed,
 	});
 	sequelize.sync();
+	updateListCategories();
 	//stub
 	SaveToJSONFile(dbJSON, categories);
 };
 delCategory = function(data) {
-	categories.splice(selectedCategory,selectedCategory);
+	categories.splice(selectedCategory,1);
 	SaveToJSONFile(dbJSON, categories);
 };
 editCategory = function(data) {
@@ -241,12 +248,29 @@ addPlayer = function(data) {
 		}
 	}
 
+	// var judges = [];
+	// var sum = [];
+	// var rank = [];
+	// for (var i = 0; i < 2; i++) {
+	// 	judges[i] = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+	// 	sum[i] = 0;
+	// 	rank[i] = 0;
+	// }
 	// PlayersCategories.findOrCreate({
 	// 	where: {
-
+	// 		categoryIndex: 1,
+	// 		playerNumber: 5,
 	// 	},
+	// 	defaults: {
+	// 		judges: judges,
+	// 		sum: sum,
+	// 		rank: rank,
+	// 		total_sum: 0,
+	// 		total_rank: 0,
+	// 	}
 	// });
-
+	// sequelize.sync();
+	updateListPlayers();
 	//stub
 	SaveToJSONFile(dbJSON, categories);
 };
@@ -344,6 +368,21 @@ webSocketServer.on('connection', function(ws) {
 				confirmations: confirmations,
 			};
 			ws.send(JSON.stringify(answer));
+			
+			protocol = [];
+			node = {nubmer: 0, rank: 0};
+			for (var i = 0; i < categories[openedCategory].players.length; i++) {
+				protocol[i] = {
+					number: categories[openedCategory].players[i].number,
+					rank: categories[openedCategory].players[i].rounds[openedRound].judges[data.judge - 1],
+				}
+			};
+			var answer = {
+				type: "protocol",
+				protocol: protocol,
+			};
+	    	ws.send(JSON.stringify(answer));
+
 		}
 		if (compareFlag) {
 			var answer = {
@@ -448,6 +487,8 @@ webSocketServer.on('connection', function(ws) {
 		var answer = {
 			type: "protocol",
 			protocol: protocol,
+			category: categories[openedCategory].fullName,
+			round: openedRound,
 		};
     	ws.send(JSON.stringify(answer));
 	};
@@ -557,7 +598,7 @@ webSocketServer.on('connection', function(ws) {
 		var answer = {
 			type: "listcategories",
 			categories: [],
-			error: "",
+			error: DBCategories,
 		};
 		for (var i = 0; i < categories.length; i++) {
 			answer.categories[i] =  categories[i].shortName;
@@ -567,13 +608,28 @@ webSocketServer.on('connection', function(ws) {
 		ws.send(JSON.stringify(answer));
 	};
 	sendListPlayers = function() {
+		//getAllElementsFromTable(Players);//
 		var answer = {
 			type: "listplayers",
 			rounds: categories[selectedCategory].rounds.length,
 			players: categories[selectedCategory].players,
 			fullName: categories[selectedCategory].fullName,
-			error: "",
+			error: DBPlayers, //DBNodes,
+			// getAllElementsFromTable(Players),
+			// error: Players.findAll().then(function(players){
+			// 	console.log(players);
+			// }),
 		};
 		ws.send(JSON.stringify(answer));
 	};
 });
+
+// Players.destroy({
+// 	where: {number: 5},
+// })
+
+getAllElementsFromTable = function(Table) {
+	Table.findAll().then(function(table) {
+		DBNodes = clone(table);
+	})
+};
